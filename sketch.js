@@ -77,6 +77,89 @@ function setup()
   target_phrase = phrases[current_trial];
   
   drawUserIDScreen();       // draws the user input screen (student number and display size)
+  
+  drawInstructions();
+}
+
+function drawInstructions()
+{
+  push();
+  noStroke();
+  fill(color(73, 171,228));
+  textAlign(LEFT);
+  textFont("Arial", 23);
+  textStyle(BOLD);
+  text("Instructions:", width * 0.015, height * 0.49);
+  pop();
+  
+  push();
+  noStroke();
+  fill(color(255,255,255));
+  textAlign(LEFT);
+  textFont("Arial", 17);
+  text("Click", width * 0.015, height * 0.57);
+  fill(color(73, 171,228));
+  text("=", width * 0.075, height * 0.57);
+  fill(color(255,255,255));
+  textStyle(ITALIC);
+  text("Input: a", width * 0.1, height * 0.57);
+  pop();
+  
+  push();
+  fill(255);
+  stroke(51);
+  rect(width * 0.015, height * 0.60, width/6, height/6);
+  fill(color(73, 171,228));
+  textFont("Arial", 28);
+  textStyle(BOLD);
+  text("a" , width * 0.080, height * 0.69);
+  fill(0);
+  textFont("Arial", 17);
+  textStyle(ITALIC);
+  text("b" , width * 0.08, height * 0.75);
+  text("c" , width * 0.14, height * 0.69);
+  pop();
+  
+  push();
+  // make the arrow pointline
+  stroke(color(73, 171,228));
+  strokeWeight(3);
+  fill(color(73, 171,228));
+  line(width * 0.17, height * 0.68, width * 0.33, height * 0.68); //draw a line beetween the vertices
+  pop();
+  
+  push();
+  // make the arrow point
+  noStroke();
+  fill(color(73, 171,228));
+  triangle(width * 0.35, height * 0.68, width * 0.33, height * 0.667, width * 0.33, height * 0.693); //draws the arrow point as a triangle
+  pop();
+  
+  push();
+  // make the arrow pointline
+  stroke(color(73, 171,228));
+  strokeWeight(3);
+  fill(color(73, 171,228));
+  line(width * 0.09, height * 0.76, width * 0.09, height * 0.90); //draw a line beetween the vertices
+  pop();
+  
+  push();
+  // make the arrow point
+  noStroke();
+  fill(color(73, 171,228));
+  triangle(width * 0.09, height * 0.925, width * 0.08, height * 0.90, width * 0.10, height * 0.90); //draws the arrow point as a triangle
+  pop();
+  
+  push();
+  fill(255);
+  textFont("Arial", 17);
+  textStyle(ITALIC);
+  text("Input: c" , width * 0.35, height * 0.69);
+  text("Input: b", width * 0.06, height * 0.95);
+  textFont("Arial", 12);
+  text("Click+Swipe Right" , width * 0.19, height * 0.65)
+  text("Click+Swipe Down" , width * 0.10, height * 0.85)
+  pop();
 }
 
 function draw()
