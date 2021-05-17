@@ -299,7 +299,7 @@ function draw2Dkeyboard()
   fill(0);
   textFont("Arial", 13);
   textStyle(ITALIC);
-  text("<" , width/2 - 0.45*PPCM, height/2 + 1.5*PPCM);
+  text("del" , width/2 - 0.45*PPCM, height/2 + 1.5*PPCM);
   
   fill(255);
   stroke(51);
