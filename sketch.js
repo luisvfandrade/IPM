@@ -11,7 +11,7 @@ const BAKE_OFF_DAY   = false;  // set to 'true' before sharing during the simula
 
 // Our Database
 const ITERATION      = 'Initial'
-const STORE          = true;
+const STORE          = false;
 
 let PPI, PPCM;                 // pixel density (DO NOT CHANGE!)
 let second_attempt_button;     // button that starts the second attempt (DO NOT CHANGE!)
