@@ -549,7 +549,7 @@ function printAndSavePerformance()
     // Initialize our Firebase
     if (attempt === 0)
     {
-    firebase.initializeApp(ourFirebase);
+    firebase.initializeApp(myFirebaseConfig);
     database = firebase.database();
     }
     let ref = database.ref('Scores/'+ ITERATION + '/' + student_ID);
