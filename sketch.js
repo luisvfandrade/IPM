@@ -10,7 +10,7 @@ const GROUP_NUMBER   = 52;      // add your group number here as an integer (e.g
 const BAKE_OFF_DAY   = false;  // set to 'true' before sharing during the simulation and bake-off days
 
 // Our Database
-const ITERATION      = 'Initial'
+const ITERATION      = 'First'
 const STORE          = true;
 
 let PPI, PPCM;                 // pixel density (DO NOT CHANGE!)
@@ -43,13 +43,13 @@ let errors           = 0;      // a running total of the number of errors (when 
 let database;                  // Firebase DB
 
 // 2D Keyboard UI
-let leftArrow, rightArrow;     // holds the left and right UI images for our basic 2D keyboard   
-let ARROW_SIZE;                // UI button size
-let current_letter = 'a';      // current char being displayed on our basic 2D keyboard (starts with 'a')
+let keyboard, instructions;
 
 // Click variables
 let click, clickX, clickY;
 let releasedX, releasedY;
+
+let current_word = "";
 
 // Runs once before the setup() and loads our data (images, phrases)
 function preload()
@@ -64,6 +64,10 @@ function preload()
   // Loads UI elements for our basic keyboard
   leftArrow = loadImage("data/left.png");
   rightArrow = loadImage("data/right.png");
+
+  // Loads UI elements for our basic keyboard
+  keyboard = loadImage("data/keyboard.png");
+  instructions = loadImage("data/instructions.png");
 }
 
 // Runs once at the start
@@ -102,22 +106,11 @@ function drawInstructions()
   text("=", width * 0.075, height * 0.57);
   fill(color(255,255,255));
   textStyle(ITALIC);
-  text("Input: a", width * 0.1, height * 0.57);
+  text("Input: g", width * 0.1, height * 0.57);
   pop();
   
   push();
-  fill(255);
-  stroke(51);
-  rect(width * 0.015, height * 0.60, width/6, height/6);
-  fill(color(73, 171,228));
-  textFont("Arial", 28);
-  textStyle(BOLD);
-  text("a" , width * 0.080, height * 0.69);
-  fill(0);
-  textFont("Arial", 17);
-  textStyle(ITALIC);
-  text("b" , width * 0.08, height * 0.75);
-  text("c" , width * 0.14, height * 0.69);
+  image(instructions, width * 0.015, height * 0.60, width/6, height/5)
   pop();
   
   push();
@@ -125,14 +118,14 @@ function drawInstructions()
   stroke(color(73, 171,228));
   strokeWeight(3);
   fill(color(73, 171,228));
-  line(width * 0.17, height * 0.68, width * 0.33, height * 0.68); //draw a line beetween the vertices
+  line(width * 0.17, height * 0.70, width * 0.33, height * 0.70); //draw a line beetween the vertices
   pop();
   
   push();
   // make the arrow point
   noStroke();
   fill(color(73, 171,228));
-  triangle(width * 0.35, height * 0.68, width * 0.33, height * 0.667, width * 0.33, height * 0.693); //draws the arrow point as a triangle
+  triangle(width * 0.35, height * 0.70, width * 0.33, height * 0.687, width * 0.33, height * 0.713); //draws the arrow point as a triangle
   pop();
   
   push();
@@ -140,25 +133,25 @@ function drawInstructions()
   stroke(color(73, 171,228));
   strokeWeight(3);
   fill(color(73, 171,228));
-  line(width * 0.09, height * 0.76, width * 0.09, height * 0.90); //draw a line beetween the vertices
+  line(width * 0.17, height * 0.78, width * 0.33, height * 0.87); //draw a line beetween the vertices
   pop();
   
   push();
   // make the arrow point
   noStroke();
   fill(color(73, 171,228));
-  triangle(width * 0.09, height * 0.925, width * 0.08, height * 0.90, width * 0.10, height * 0.90); //draws the arrow point as a triangle
+  triangle(width * 0.35, height * 0.88, width * 0.333, height * 0.858, width * 0.325, height * 0.88); //draws the arrow point as a triangle
   pop();
   
   push();
   fill(255);
   textFont("Arial", 17);
   textStyle(ITALIC);
-  text("Input: c" , width * 0.35, height * 0.69);
-  text("Input: b", width * 0.06, height * 0.95);
+  text("Input: h" , width * 0.35, height * 0.71);
+  text("Input: n", width * 0.35, height * 0.89);
   textFont("Arial", 12);
-  text("Click+Swipe Right" , width * 0.19, height * 0.65)
-  text("Click+Swipe Down" , width * 0.10, height * 0.85)
+  text("Click+Swipe Right" , width * 0.19, height * 0.67)
+  text("Click+Swipe Diagonally" , width * 0.06, height * 0.86)
   pop();
 }
 
@@ -180,7 +173,7 @@ function draw()
     textAlign(CENTER); 
     textFont("Arial", 16);
     fill(0);
-    text("NOT INTERACTIVE", width/2, height/2 - 1.3 * PPCM);
+    text(current_word, width/2, height/2 - 1.3 * PPCM);
 
     // Draws the touch input area (4x3cm) -- DO NOT CHANGE SIZE!
     stroke(0, 255, 0);
@@ -196,123 +189,8 @@ function draw()
 // Draws 2D keyboard UI (current letter and left and right arrows)
 function draw2Dkeyboard()
 {
-  fill(255);
-  stroke(51);
-  rect(width/2 - 1.95*PPCM, height/2 - 1.0*PPCM, 4.0*PPCM/3, 3.0*PPCM/3);
-  fill(color(73, 171,228));
-  textFont("Arial", 28);
-  textStyle(BOLD);
-  text("a" , width/2 - 1.4*PPCM, height/2 - 0.5*PPCM);
-  fill(0);
-  textFont("Arial", 13);
-  textStyle(ITALIC);
-  text("b" , width/2 - 1.4*PPCM, height/2 - 0.1*PPCM);
-  text("c" , width/2 - 0.9*PPCM, height/2 - 0.5*PPCM);
-  
-  fill(255);
-  stroke(51);
-  rect(width/2 - 0.68*PPCM, height/2 - 1.0*PPCM, 4.0*PPCM/3, 3.0*PPCM/3);
-  fill(color(73, 171,228));
-  textFont("Arial", 28);
-  textStyle(BOLD);
-  text("e" , width/2 - 0.0*PPCM, height/2 - 0.5*PPCM);
-  fill(0);
-  textFont("Arial", 13);
-  textStyle(ITALIC);
-  text("f" , width/2 + 0.40*PPCM, height/2 - 0.5*PPCM);
-  text("d" , width/2 - 0.45*PPCM, height/2 - 0.5*PPCM);
-  
-  fill(255);
-  stroke(51);
-  rect(width/2 + 0.65*PPCM, height/2 - 1.0*PPCM, 4.0*PPCM/3, 3.0*PPCM/3);
-  fill(color(73, 171,228));
-  textFont("Arial", 28);
-  textStyle(BOLD);
-  text("i" , width/2 + 1.35*PPCM, height/2 - 0.5*PPCM);
-  fill(0);
-  textFont("Arial", 13);
-  textStyle(ITALIC);
-  text("h" , width/2 + 1.35*PPCM, height/2 - 0.1*PPCM);
-  text("g" , width/2 + 0.9*PPCM, height/2 - 0.5*PPCM);
-  
-  fill(255);
-  stroke(51);
-  rect(width/2 - 1.95*PPCM, height/2 - 1.0*PPCM + 3.0*PPCM/3, 4.0*PPCM/3, 3.0*PPCM/3);
-  fill(color(73, 171,228));
-  textFont("Arial", 28);
-  textStyle(BOLD);
-  text("l" , width/2 - 1.4*PPCM, height/2 + 0.68*PPCM);
-  fill(0);
-  textFont("Arial", 13);
-  textStyle(ITALIC);
-  text("j" , width/2 - 1.4*PPCM, height/2 + 0.21*PPCM);
-  text("k" , width/2 - 1.4*PPCM, height/2 + 0.9*PPCM);
-  
-  fill(255);
-  stroke(51);
-  rect(width/2 - 0.68*PPCM, height/2 - 1.0*PPCM + 3.0*PPCM/3, 4.0*PPCM/3, 3.0*PPCM/3);
-  fill(color(73, 171,228));
-  textFont("Arial", 28);
-  textStyle(BOLD);
-  text("o" , width/2 - 0.0*PPCM, height/2 + 0.6*PPCM);
-  fill(0);
-  textFont("Arial", 13);
-  textStyle(ITALIC);
-  text("q" , width/2 - 0.0*PPCM, height/2 + 0.9*PPCM);
-  text("n" , width/2 + 0.40*PPCM, height/2 + 0.6*PPCM);
-  text("m" , width/2 - 0.45*PPCM, height/2 + 0.6*PPCM);
-  text("p" , width/2 - 0.0*PPCM, height/2 + 0.2*PPCM);
-  
-  fill(255);
-  stroke(51);
-  rect(width/2 + 0.65*PPCM, height/2 - 1.0*PPCM + 3.0*PPCM/3, 4.0*PPCM/3, 3.0*PPCM/3);
-  fill(color(73, 171,228));
-  textFont("Arial", 28);
-  textStyle(BOLD);
-  text("r" , width/2 + 1.35*PPCM, height/2 + 0.6*PPCM);
-  fill(0);
-  textFont("Arial", 13);
-  textStyle(ITALIC);
-  text("s" , width/2 + 1.35*PPCM, height/2 + 0.2*PPCM);
-  text("t" , width/2 + 1.35*PPCM, height/2 + 0.9*PPCM);
-  
-  fill(255);
-  stroke(51);
-  rect(width/2 - 1.95*PPCM, height/2 - 1.0*PPCM + 6.0*PPCM/3, 4.0*PPCM/3, 3.0*PPCM/3);
-  fill(color(73, 171,228));
-  textFont("Arial", 28);
-  textStyle(BOLD);
-  text("u" , width/2 - 1.4*PPCM, height/2 + 1.8*PPCM);
-  fill(0);
-  textFont("Arial", 13);
-  textStyle(ITALIC);
-  text("v" , width/2 - 1.4*PPCM, height/2 + 1.3*PPCM);
-  text("w" , width/2 - 0.9*PPCM, height/2 + 1.8*PPCM);
-  
-  fill(255);
-  stroke(51);
-  rect(width/2 - 0.68*PPCM, height/2 - 1.0*PPCM + 6.0*PPCM/3, 4.0*PPCM/3, 3.0*PPCM/3);
-  fill(color(73, 171,228));
-  textFont("Arial", 28);
-  textStyle(BOLD);
-  text("__" , width/2 + 0.0*PPCM, height/2 + 1.7*PPCM);
-  fill(0);
-  textFont("Arial", 13);
-  textStyle(ITALIC);
-  text("del" , width/2 - 0.45*PPCM, height/2 + 1.5*PPCM);
-  
-  fill(255);
-  stroke(51);
-  rect(width/2 + 0.65*PPCM, height/2 - 1.0*PPCM + 6.0*PPCM/3, 4.0*PPCM/3, 3.0*PPCM/3);
-  fill(color(73, 171,228));
-  textFont("Arial", 28);
-  textStyle(BOLD);
-  text("y" , width/2 + 1.35*PPCM, height/2 + 1.8*PPCM);
-  fill(0);
-  textFont("Arial", 13);
-  textStyle(ITALIC);
-  text("z" , width/2 + 1.35*PPCM, height/2 + 1.3*PPCM);
-  text("x" , width/2 + 0.9*PPCM, height/2 + 1.8*PPCM);  
+  imageMode(CORNER);
+  image(keyboard, width/2 - 2.0*PPCM, height/2 - 1.0*PPCM, 4.0*PPCM, 3.0*PPCM); 
 }
 
 // Evoked when the mouse button was pressed
@@ -348,6 +226,7 @@ function mousePressed()
       {
         // Prepares for new trial
         currently_typed = "";
+        current_word = "";
         target_phrase = phrases[current_trial];  
       }
       else
@@ -373,88 +252,94 @@ function mousePressed()
 
 function mouseReleased()
 {
+  let letter = '';
   if (click)
   {
     click = false;
     releaseX = mouseX;
     releaseY = mouseY;
     
-    // First Row
-    if (clickX > (width/2 - 2.0*PPCM) && clickX < (width/2 - 2.0*PPCM + 4.0*PPCM/3) && clickY > (height/2 - 1.0*PPCM) && clickY < (height/2 - 1.0*PPCM + 1.0*PPCM))
+    // First Button
+    if (clickX > (width/2 - 2.0*PPCM) && clickX < (width/2 - 2.0*PPCM + 4.0*PPCM/3) && clickY > (height/2 - 1.0*PPCM) && clickY < (height/2 + 1.0*PPCM))
     {
-      if (clickX == releaseX && clickY == releaseY) currently_typed += 'a';
-      else if (clickX < releaseX && abs(clickX - releaseX) > abs(clickY - releaseY))       
-        currently_typed += 'c';
-      else if (clickY < releaseY && abs(clickY - releaseY) > abs(clickX - releaseX))  
-        currently_typed += 'b';
+      if (abs(clickX - releaseX) < 20 && abs(clickY - releaseY) < 40)
+        letter += 's';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) < 40 && clickX > releaseX)       
+        letter += 'a';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) < 40 && clickX < releaseX)  
+        letter += 'd';
+      else if (abs(clickX - releaseX) < 20 && abs(clickY - releaseY) > 40 && clickY > releaseY)  
+        letter += 'w';
+      else if (abs(clickX - releaseX) < 20 && abs(clickY - releaseY) > 40 && clickY < releaseY)  
+        letter += 'x';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX > releaseX && clickY > releaseY)  
+        letter += 'q';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX < releaseX && clickY > releaseY)  
+        letter += 'e';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX > releaseX && clickY < releaseY)  
+        letter += 'z';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX < releaseX && clickY < releaseY)  
+        letter += 'c';
+      currently_typed += letter;
+      current_word += letter;
     }
-    else if (clickX > (width/2 - 2.0*PPCM + 4.0*PPCM/3) && clickX < (width/2 - 2.0*PPCM + 2*(4.0*PPCM/3)) && clickY > (height/2 - 1.0*PPCM) && clickY < (height/2 - 1.0*PPCM + 1.0*PPCM))
+    // Second Button
+    else if (clickX > (width/2 - 2.0*PPCM + 4.0*PPCM/3) && clickX < (width/2 - 2.0*PPCM + 2*(4.0*PPCM/3)) && clickY > (height/2 - 1.0*PPCM) && clickY < (height/2 + 1.0*PPCM))
     {
-      if (clickX == releaseX && clickY == releaseY) currently_typed += 'e';
-      else if (clickX > releaseX && abs(clickX - releaseX) > abs(clickY - releaseY))       
-        currently_typed += 'd';
-      else if (clickX < releaseX && abs(clickX - releaseX) > abs(clickY - releaseY))  
-        currently_typed += 'f';
+      if (abs(clickX - releaseX) < 20 && abs(clickY - releaseY) < 40)
+        letter += 'g';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) < 40 && clickX > releaseX)       
+        letter += 'f';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) < 40 && clickX < releaseX)  
+        letter += 'h';
+      else if (abs(clickX - releaseX) < 20 && abs(clickY - releaseY) > 40 && clickY > releaseY)  
+        letter += 't';
+      else if (abs(clickX - releaseX) < 20 && abs(clickY - releaseY) > 40 && clickY < releaseY)  
+        letter += 'b';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX > releaseX && clickY > releaseY)  
+        letter += 'r';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX < releaseX && clickY > releaseY)  
+        letter += 'y';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX > releaseX && clickY < releaseY)  
+        letter += 'v';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX < releaseX && clickY < releaseY)  
+        letter += 'n';
+      currently_typed += letter;
+      current_word += letter;
     }
-    else if (clickX > (width/2 - 2.0*PPCM + 2*(4.0*PPCM/3)) && clickX < (width/2 - 2.0*PPCM + 3*(4.0*PPCM/3)) && clickY > (height/2 - 1.0*PPCM) && clickY < (height/2 - 1.0*PPCM + 1.0*PPCM))
+    // Third Button
+    else if (clickX > (width/2 - 2.0*PPCM + 2*(4.0*PPCM/3)) && clickX < (width/2 - 2.0*PPCM + 3*(4.0*PPCM/3)) && clickY > (height/2 - 1.0*PPCM) && clickY < (height/2 + 1.0*PPCM))
     {
-      if (clickX == releaseX && clickY == releaseY) currently_typed += 'i';
-      else if (clickX > releaseX && abs(clickX - releaseX) > abs(clickY - releaseY))       
-        currently_typed += 'g';
-      else if (clickY < releaseY && abs(clickY - releaseY) > abs(clickX - releaseX))  
-        currently_typed += 'h';
+      if (abs(clickX - releaseX) < 20 && abs(clickY - releaseY) < 40) 
+        letter += 'k';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) < 40 && clickX > releaseX)       
+        letter += 'j';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) < 40 && clickX < releaseX)  
+        letter += 'p';
+      else if (abs(clickX - releaseX) < 20 && abs(clickY - releaseY) > 40 && clickY > releaseY)  
+        letter += 'i';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX > releaseX && clickY > releaseY)  
+        letter += 'u';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX < releaseX && clickY > releaseY)  
+        letter += 'o';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX > releaseX && clickY < releaseY)  
+        letter += 'm';
+      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX < releaseX && clickY < releaseY)  
+        letter += 'l';
+      currently_typed += letter;
+      current_word += letter;
     }
-    // Second Row
-    if (clickX > (width/2 - 2.0*PPCM) && clickX < (width/2 - 2.0*PPCM + 4.0*PPCM/3) && clickY > (height/2) && clickY < (height/2 + 1.0*PPCM))
+    // Space
+    else if (clickX > (width/2 - 2.0*PPCM) && clickX < (width/2 - 2.0*PPCM + 2*(4.0*PPCM/3)) && clickY > (height/2 + 1.0*PPCM) && clickY < (height/2 + 2*(1.0*PPCM)))
     {
-      if (clickX == releaseX && clickY == releaseY) currently_typed += 'l';
-      else if (clickY > releaseY && abs(clickY - releaseY) > abs(clickX - releaseX))       
-        currently_typed += 'j';
-      else if (clickY < releaseY && abs(clickY - releaseY) > abs(clickX - releaseX))  
-        currently_typed += 'k';
+      currently_typed += ' ';
+      current_word = '';
     }
-    else if (clickX > (width/2 - 2.0*PPCM + 4.0*PPCM/3) && clickX < (width/2 - 2.0*PPCM + 2*(4.0*PPCM/3)) && clickY > (height/2) && clickY < (height/2 + 1.0*PPCM))
-    {
-      if (clickX == releaseX && clickY == releaseY) currently_typed += 'o';
-      else if (clickX > releaseX && abs(clickX - releaseX) > abs(clickY - releaseY))       
-        currently_typed += 'm';
-      else if (clickX < releaseX && abs(clickX - releaseX) > abs(clickY - releaseY))       
-        currently_typed += 'n';
-      else if (clickY > releaseY && abs(clickY - releaseY) > abs(clickX - releaseX))  
-        currently_typed += 'p';
-      else if (clickY < releaseY && abs(clickY - releaseY) > abs(clickX - releaseX))  
-        currently_typed += 'q';
-    }
-    else if (clickX > (width/2 - 2.0*PPCM + 2*(4.0*PPCM/3)) && clickX < (width/2 - 2.0*PPCM + 3*(4.0*PPCM/3)) && clickY > (height/2) && clickY < (height/2 + 1.0*PPCM))
-    {
-      if (clickX == releaseX && clickY == releaseY) currently_typed += 'r';
-      else if (clickY > releaseY && abs(clickY - releaseY) > abs(clickX - releaseX))       
-        currently_typed += 's';
-      else if (clickY < releaseY && abs(clickY - releaseY) > abs(clickX - releaseX))  
-        currently_typed += 't';
-    }
-    // Third Row
-    if (clickX > (width/2 - 2.0*PPCM) && clickX < (width/2 - 2.0*PPCM + 4.0*PPCM/3) && clickY > (height/2 + 1.0*PPCM) && clickY < (height/2 + 2*(1.0*PPCM)))
-    {
-      if (clickX == releaseX && clickY == releaseY) currently_typed += 'u';
-      else if (clickX < releaseX && abs(clickX - releaseX) > abs(clickY - releaseY))       
-        currently_typed += 'w';
-      else if (clickY > releaseY && abs(clickY - releaseY) > abs(clickX - releaseX))  
-        currently_typed += 'v';
-    }
-    else if (clickX > (width/2 - 2.0*PPCM + 4.0*PPCM/3) && clickX < (width/2 - 2.0*PPCM + 2*(4.0*PPCM/3)) && clickY > (height/2 + 1.0*PPCM) && clickY < (height/2 + 2*(1.0*PPCM)))
-    {
-      if (clickX == releaseX && clickY == releaseY) currently_typed += ' ';
-      else if (clickX > releaseX && abs(clickX - releaseX) > abs(clickY - releaseY) && currently_typed.length > 0)       
-        currently_typed = currently_typed.substring(0, currently_typed.length - 1);
-    }
+    // Delete
     else if (clickX > (width/2 - 2.0*PPCM + 2*(4.0*PPCM/3)) && clickX < (width/2 - 2.0*PPCM + 3*(4.0*PPCM/3)) && clickY > (height/2 + 1.0*PPCM) && clickY < (height/2 + 2*(1.0*PPCM)))
     {
-      if (clickX == releaseX && clickY == releaseY) currently_typed += 'y';
-      else if (clickX > releaseX && abs(clickX - releaseX) > abs(clickY - releaseY))       
-        currently_typed += 'x';
-      else if (clickY > releaseY && abs(clickY - releaseY) > abs(clickX - releaseX))  
-        currently_typed += 'z';
+      currently_typed = currently_typed.substring(0, currently_typed.length - 1);
+      current_word = current_word.substring(0, current_word.length - 1);
     }
   }
 }
@@ -474,8 +359,8 @@ function startSecondAttempt()
   currently_typed      = "";
   CPS                  = 0;
   
-  current_letter       = 'a';
-  
+  current_word         = "";
+
   // Show the watch and keyboard again
   second_attempt_button.remove();
   draw_finger_arm      = true;
