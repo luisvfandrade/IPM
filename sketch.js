@@ -364,7 +364,7 @@ function mousePressed()
         {
           second_attempt_button = createButton('START 2ND ATTEMPT');
           second_attempt_button.mouseReleased(startSecondAttempt);
-          second_attempt_button.position(width/2 - second_attempt_button.size().width/2, height/2 + 200);
+          second_attempt_button.position(width/2 - second_attempt_button.size().width/2, height/2 + 250);
         }
       }
     }
@@ -487,7 +487,8 @@ function printAndSavePerformance()
 {
   // DO NOT CHANGE THESE
   let attempt_duration = (attempt_end_time - attempt_start_time) / 60000;          // 60K is number of milliseconds in minute
-  let wpm              = (letters_entered / 5.0) / attempt_duration;      
+  let wpm              = (letters_entered / 5.0) / attempt_duration;
+  CPS = letters_entered / (attempt_duration * 60); 
   let freebie_errors   = letters_expected * 0.05;                                  // no penalty if errors are under 5% of chars
   let penalty          = max(0, (errors - freebie_errors) / attempt_duration); 
   let wpm_w_penalty    = max((wpm - penalty),0);                                   // minus because higher WPM is better: NET WPM
@@ -511,9 +512,10 @@ function printAndSavePerformance()
   }
   
   text("Raw WPM: " + wpm.toFixed(2), width / 2, height / 2 + h+20);
-  text("Freebie errors: " + freebie_errors.toFixed(2), width / 2, height / 2 + h+40);
-  text("Penalty: " + penalty.toFixed(2), width / 2, height / 2 + h+60);
-  text("WPM with penalty: " + wpm_w_penalty.toFixed(2), width / 2, height / 2 + h+80);
+  text("Raw CPS: " + CPS.toFixed(2), width / 2, height / 2 + h+40);
+  text("Freebie errors: " + freebie_errors.toFixed(2), width / 2, height / 2 + h+60);
+  text("Penalty: " + penalty.toFixed(2), width / 2, height / 2 + h+80);
+  text("WPM with penalty: " + wpm_w_penalty.toFixed(2), width / 2, height / 2 + h+100);
 
   // Saves results (DO NOT CHANGE!)
   let attempt_data = 
