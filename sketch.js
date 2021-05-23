@@ -10,7 +10,7 @@ const GROUP_NUMBER   = 52;      // add your group number here as an integer (e.g
 const BAKE_OFF_DAY   = false;  // set to 'true' before sharing during the simulation and bake-off days
 
 // Our Database
-const ITERATION      = 'First'
+const ITERATION      = 'Second'
 const STORE          = true;
 
 let PPI, PPCM;                 // pixel density (DO NOT CHANGE!)
