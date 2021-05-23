@@ -51,6 +51,11 @@ let releasedX, releasedY;
 
 let current_word = "";
 
+// Autocomplete
+let all_words;
+let last_index, number_words;
+let first_word, second_word;
+
 // Runs once before the setup() and loads our data (images, phrases)
 function preload()
 {    
@@ -68,6 +73,9 @@ function preload()
   // Loads UI elements for our basic keyboard
   keyboard = loadImage("data/keyboard.png");
   instructions = loadImage("data/instructions.png");
+
+  // Loads the most used words
+  all_words = loadStrings('data/words.txt');
 }
 
 // Runs once at the start
@@ -79,6 +87,9 @@ function setup()
   // DO NOT CHANGE THESE!
   shuffle(phrases, true);   // randomize the order of the phrases list (N=501)
   target_phrase = phrases[current_trial];
+
+  // Autocomplete
+  resetAutoComplete();
   
   drawUserIDScreen();       // draws the user input screen (student number and display size)
   
@@ -168,10 +179,11 @@ function draw()
     
     // Draws the non-interactive screen area (4x1cm) -- DO NOT CHANGE SIZE!
     noStroke();
-    fill(125);
+    fill(color(220,220,220));
     rect(width/2 - 2.0*PPCM, height/2 - 2.0*PPCM, 4.0*PPCM, 1.0*PPCM);
+
     textAlign(CENTER); 
-    textFont("Arial", 16);
+    textFont("Arial", 0.35*PPCM);
     fill(0);
     text(current_word, width/2, height/2 - 1.3 * PPCM);
 
@@ -182,6 +194,14 @@ function draw()
 
     draw2Dkeyboard();       // draws our basic 2D keyboard UI
 
+    // Draws text on autocomplete buttons
+    textAlign(CENTER); 
+    textFont("Arial", 0.30*PPCM);
+    fill(0);
+    noStroke();
+    text(first_word , width/2 - 0.98*PPCM, height/2 - 0.45*PPCM);
+    text(second_word , width/2 + 0.99*PPCM, height/2 - 0.45*PPCM);
+
     drawFatFinger();        // draws the finger that simulates the 'fat finger' problem
   }
 }
@@ -190,7 +210,54 @@ function draw()
 function draw2Dkeyboard()
 {
   imageMode(CORNER);
-  image(keyboard, width/2 - 2.0*PPCM, height/2 - 1.0*PPCM, 4.0*PPCM, 3.0*PPCM); 
+  image(keyboard, width/2 - 2.0*PPCM, height/2 - 1.0*PPCM, 4.0*PPCM, 3.0*PPCM);
+  
+  textFont("Arial", 0.48*PPCM);
+  textStyle(BOLD);
+  fill(0);
+  noStroke();
+  text("S" , width/2 - 1.32*PPCM, height/2 + 0.63*PPCM);
+  textFont("Arial", 0.25*PPCM);
+  textStyle(NORMAL);
+  text("Q" , width/2 - 1.74*PPCM, height/2 + 0.10*PPCM);
+  text("W" , width/2 - 1.32*PPCM, height/2 + 0.10*PPCM);
+  text("E" , width/2 - 0.89*PPCM, height/2 + 0.10*PPCM);
+  text("A" , width/2 - 1.74*PPCM, height/2 + 0.60*PPCM);
+  text("D" , width/2 - 0.89*PPCM, height/2 + 0.60*PPCM);
+  text("Z" , width/2 - 1.74*PPCM, height/2 + 1.08*PPCM);
+  text("X" , width/2 - 1.32*PPCM, height/2 + 1.08*PPCM);
+  text("C" , width/2 - 0.89*PPCM, height/2 + 1.08*PPCM);
+  
+  textFont("Arial", 0.48*PPCM);
+  textStyle(BOLD);
+  fill(0);
+  noStroke();
+  text("G" , width/2 + 0.0*PPCM, height/2 + 0.63*PPCM);
+  textFont("Arial", 0.25*PPCM);
+  textStyle(NORMAL);
+  text("R" , width/2 - 0.42*PPCM, height/2 + 0.10*PPCM);
+  text("T" , width/2 - 0*PPCM, height/2 + 0.10*PPCM);
+  text("Y" , width/2 + 0.42*PPCM, height/2 + 0.10*PPCM);
+  text("H" , width/2 + 0.42*PPCM, height/2 + 0.60*PPCM);
+  text("F" , width/2 - 0.44*PPCM, height/2 + 0.60*PPCM);
+  text("V" , width/2 - 0.42*PPCM, height/2 + 1.08*PPCM);
+  text("B" , width/2 - 0*PPCM, height/2 + 1.08*PPCM);
+  text("N" , width/2 + 0.42*PPCM, height/2 + 1.08*PPCM);
+  
+  textFont("Arial", 0.48*PPCM);
+  textStyle(BOLD);
+  fill(0);
+  noStroke();
+  text("K" , width/2 + 1.30*PPCM, height/2 + 0.63*PPCM);
+  textFont("Arial", 0.25*PPCM);
+  textStyle(NORMAL);
+  text("U" , width/2 + 0.88*PPCM, height/2 + 0.10*PPCM);
+  text("I" , width/2 + 1.30*PPCM, height/2 + 0.10*PPCM);
+  text("O" , width/2 + 1.72*PPCM, height/2 + 0.10*PPCM);
+  text("J" , width/2 + 0.88*PPCM, height/2 + 0.60*PPCM);
+  text("P" , width/2 + 1.72*PPCM, height/2 + 0.60*PPCM);
+  text("M" , width/2 + 0.88*PPCM, height/2 + 1.08*PPCM);
+  text("L" , width/2 + 1.72*PPCM, height/2 + 1.08*PPCM);
 }
 
 // Evoked when the mouse button was pressed
@@ -227,6 +294,7 @@ function mousePressed()
         // Prepares for new trial
         currently_typed = "";
         current_word = "";
+        resetAutoComplete();
         target_phrase = phrases[current_trial];  
       }
       else
@@ -258,88 +326,106 @@ function mouseReleased()
     click = false;
     releaseX = mouseX;
     releaseY = mouseY;
-    
-    // First Button
-    if (clickX > (width/2 - 2.0*PPCM) && clickX < (width/2 - 2.0*PPCM + 4.0*PPCM/3) && clickY > (height/2 - 1.0*PPCM) && clickY < (height/2 + 1.0*PPCM))
+    // Autocomplete 1
+    if (clickX > (width/2 - 1.95*PPCM) && clickX < (width/2 - 1.95*PPCM + 1.9*PPCM) && clickY > (height/2 - 0.85*PPCM) && clickY < (height/2 - 0.85*PPCM + 3.0*PPCM/5))
     {
-      if (abs(clickX - releaseX) < 20 && abs(clickY - releaseY) < 40)
+      currently_typed = currently_typed.substring(0, currently_typed.length - current_word.length);
+      current_word = first_word;
+      currently_typed += first_word;
+    }
+    // Autocomplete 2
+    else if (clickX > (width/2 + 0.05*PPCM) && clickX < (width/2 + 0.05*PPCM + 1.9*PPCM) && clickY > (height/2 - 0.85*PPCM) && clickY < (height/2 - 0.85*PPCM + 3.0*PPCM/5))
+    {
+      currently_typed = currently_typed.substring(0, currently_typed.length - current_word.length);
+      current_word = second_word;
+      currently_typed += second_word;
+    }
+    // First Button
+    else if (clickX > (width/2 - 1.95*PPCM) && clickX < (width/2 - 1.95*PPCM + 1.3*PPCM) && clickY > (height/2 - 0.25*PPCM) && clickY < (height/2 - 0.25*PPCM + 3.00*PPCM/2))
+    {
+      if (abs(clickX - releaseX) < 0.6*PPCM && abs(clickY - releaseY) < 0.6*PPCM)
         letter += 's';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) < 40 && clickX > releaseX)       
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) < 0.6*PPCM && clickX > releaseX)       
         letter += 'a';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) < 40 && clickX < releaseX)  
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) < 0.6*PPCM && clickX < releaseX)  
         letter += 'd';
-      else if (abs(clickX - releaseX) < 20 && abs(clickY - releaseY) > 40 && clickY > releaseY)  
+      else if (abs(clickX - releaseX) < 0.6*PPCM && abs(clickY - releaseY) > 0.6*PPCM && clickY > releaseY)  
         letter += 'w';
-      else if (abs(clickX - releaseX) < 20 && abs(clickY - releaseY) > 40 && clickY < releaseY)  
+      else if (abs(clickX - releaseX) < 0.6*PPCM && abs(clickY - releaseY) > 0.6*PPCM && clickY < releaseY)  
         letter += 'x';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX > releaseX && clickY > releaseY)  
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) > 0.6*PPCM && clickX > releaseX && clickY > releaseY)  
         letter += 'q';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX < releaseX && clickY > releaseY)  
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) > 0.6*PPCM && clickX < releaseX && clickY > releaseY)  
         letter += 'e';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX > releaseX && clickY < releaseY)  
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) > 0.6*PPCM && clickX > releaseX && clickY < releaseY)  
         letter += 'z';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX < releaseX && clickY < releaseY)  
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) > 0.6*PPCM && clickX < releaseX && clickY < releaseY)  
         letter += 'c';
       currently_typed += letter;
       current_word += letter;
+      autoComplete();
     }
     // Second Button
-    else if (clickX > (width/2 - 2.0*PPCM + 4.0*PPCM/3) && clickX < (width/2 - 2.0*PPCM + 2*(4.0*PPCM/3)) && clickY > (height/2 - 1.0*PPCM) && clickY < (height/2 + 1.0*PPCM))
+    else if (clickX > (width/2 - 0.65*PPCM) && clickX < (width/2 - 0.65*PPCM + 1.3*PPCM) && clickY > (height/2 - 0.25*PPCM) && clickY < (height/2 - 0.25*PPCM + 3.00*PPCM/2))
     {
-      if (abs(clickX - releaseX) < 20 && abs(clickY - releaseY) < 40)
+      if (abs(clickX - releaseX) < 0.6*PPCM && abs(clickY - releaseY) < 0.6*PPCM)
         letter += 'g';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) < 40 && clickX > releaseX)       
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) < 0.6*PPCM && clickX > releaseX)       
         letter += 'f';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) < 40 && clickX < releaseX)  
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) < 0.6*PPCM && clickX < releaseX)  
         letter += 'h';
-      else if (abs(clickX - releaseX) < 20 && abs(clickY - releaseY) > 40 && clickY > releaseY)  
+      else if (abs(clickX - releaseX) < 0.6*PPCM && abs(clickY - releaseY) > 0.6*PPCM && clickY > releaseY)  
         letter += 't';
-      else if (abs(clickX - releaseX) < 20 && abs(clickY - releaseY) > 40 && clickY < releaseY)  
+      else if (abs(clickX - releaseX) < 0.6*PPCM && abs(clickY - releaseY) > 0.6*PPCM && clickY < releaseY)  
         letter += 'b';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX > releaseX && clickY > releaseY)  
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) > 0.6*PPCM && clickX > releaseX && clickY > releaseY)  
         letter += 'r';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX < releaseX && clickY > releaseY)  
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) > 0.6*PPCM && clickX < releaseX && clickY > releaseY)  
         letter += 'y';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX > releaseX && clickY < releaseY)  
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) > 0.6*PPCM && clickX > releaseX && clickY < releaseY)  
         letter += 'v';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX < releaseX && clickY < releaseY)  
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) > 0.6*PPCM && clickX < releaseX && clickY < releaseY)  
         letter += 'n';
       currently_typed += letter;
       current_word += letter;
+      autoComplete();
     }
     // Third Button
-    else if (clickX > (width/2 - 2.0*PPCM + 2*(4.0*PPCM/3)) && clickX < (width/2 - 2.0*PPCM + 3*(4.0*PPCM/3)) && clickY > (height/2 - 1.0*PPCM) && clickY < (height/2 + 1.0*PPCM))
+    else if (clickX > (width/2 + 0.65*PPCM) && (width/2 + 0.65*PPCM + 1.3*PPCM) && clickY > (height/2 - 0.25*PPCM) && clickY < (height/2 - 0.25*PPCM + 3.00*PPCM/2))
     {
-      if (abs(clickX - releaseX) < 20 && abs(clickY - releaseY) < 40) 
+      if (abs(clickX - releaseX) < 0.6*PPCM && abs(clickY - releaseY) < 0.6*PPCM) 
         letter += 'k';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) < 40 && clickX > releaseX)       
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) < 0.6*PPCM && clickX > releaseX)       
         letter += 'j';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) < 40 && clickX < releaseX)  
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) < 0.6*PPCM && clickX < releaseX)  
         letter += 'p';
-      else if (abs(clickX - releaseX) < 20 && abs(clickY - releaseY) > 40 && clickY > releaseY)  
+      else if (abs(clickX - releaseX) < 0.6*PPCM && abs(clickY - releaseY) > 0.6*PPCM && clickY > releaseY)  
         letter += 'i';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX > releaseX && clickY > releaseY)  
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) > 0.6*PPCM && clickX > releaseX && clickY > releaseY)  
         letter += 'u';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX < releaseX && clickY > releaseY)  
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) > 0.6*PPCM && clickX < releaseX && clickY > releaseY)  
         letter += 'o';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX > releaseX && clickY < releaseY)  
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) > 0.6*PPCM && clickX > releaseX && clickY < releaseY)  
         letter += 'm';
-      else if (abs(clickX - releaseX) > 20 && abs(clickY - releaseY) > 40 && clickX < releaseX && clickY < releaseY)  
+      else if (abs(clickX - releaseX) > 0.6*PPCM && abs(clickY - releaseY) > 0.6*PPCM && clickX < releaseX && clickY < releaseY)  
         letter += 'l';
       currently_typed += letter;
       current_word += letter;
+      autoComplete();
     }
     // Space
-    else if (clickX > (width/2 - 2.0*PPCM) && clickX < (width/2 - 2.0*PPCM + 2*(4.0*PPCM/3)) && clickY > (height/2 + 1.0*PPCM) && clickY < (height/2 + 2*(1.0*PPCM)))
+    else if (clickX > (width/2 - 1.95*PPCM) && clickX < (width/2 - 1.95*PPCM + 2.6 * PPCM) && clickY > (height/2 + 1.27*PPCM) && clickY < (height/2 + 1.27*PPCM + 3.0*PPCM/5))
     {
       currently_typed += ' ';
       current_word = '';
+      resetAutoComplete();
     }
     // Delete
-    else if (clickX > (width/2 - 2.0*PPCM + 2*(4.0*PPCM/3)) && clickX < (width/2 - 2.0*PPCM + 3*(4.0*PPCM/3)) && clickY > (height/2 + 1.0*PPCM) && clickY < (height/2 + 2*(1.0*PPCM)))
+    else if (clickX > (width/2 + 0.7*PPCM) && clickX < (width/2 + 0.7*PPCM + 1.2*PPCM) && clickY > (height/2 + 1.27*PPCM) && clickY < (height/2 + 1.27*PPCM + 3.0*PPCM/5))
     {
       currently_typed = currently_typed.substring(0, currently_typed.length - 1);
       current_word = current_word.substring(0, current_word.length - 1);
+      last_index = 0;
     }
   }
 }
@@ -360,6 +446,7 @@ function startSecondAttempt()
   CPS                  = 0;
   
   current_word         = "";
+  resetAutoComplete();
 
   // Show the watch and keyboard again
   second_attempt_button.remove();
@@ -463,4 +550,43 @@ function windowResized()
   // Starts drawing the watch immediately after we go fullscreen (DO NO CHANGE THIS!)
   draw_finger_arm = true;
   attempt_start_time = millis();
+}
+
+//Espaço: reiniciar first_word, second_word e last_index
+//Mudar frase/tentativa: reiniciar first_word, second_word e last_index
+//Apagar: meter last_index a 0
+
+function resetAutoComplete() {
+  number_words = all_words.length;
+  first_word = (all_words[0].split('\t'))[0];
+  second_word = (all_words[1].split('\t'))[0];
+  last_index = 2;
+}
+
+function autoComplete() {
+  let i = 0;
+  if (!first_word.startsWith(current_word)) {
+    for (i = last_index; i < number_words; i++) {
+      if(all_words[i].startsWith(current_word)) {
+        first_word = (all_words[i].split('\t'))[0];
+        last_index = i + 1;
+        break;
+      }
+    }
+    if (i == number_words - 1 && first_word != (all_words[i].split('\t'))[0]) {
+      first_word = " ";
+    }
+  }
+  if (!second_word.startsWith(current_word)) {
+    for (i = last_index; i < number_words; i++) {
+      if(all_words[i].startsWith(current_word)) {
+        second_word = (all_words[i].split('\t'))[0];
+        last_index = i + 1;
+        break;
+      }
+    }
+    if (i == number_words - 1 && second_word != (all_words[i].split('\t'))[0]) {
+      second_word = " ";
+    }
+  }
 }
