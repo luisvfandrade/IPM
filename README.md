@@ -10,4 +10,4 @@ Divisão das letras em nove teclas, estilo t9 (ordenadas alfabeticamente). Mas, 
 ### Primeira
 Divisão das letras em 3 teclas, estilo qwerty. Evolução da dinâmica dos *swipes*.
 
-**Problema:** Não foi apontado nenhum problema em específico, mas vários utilizadores comentaram que uma função *"auto complete"* melhoraria drasticamente a sua performance.
+**Problema:** Não foi apontado nenhum problema em específico com a interface, mas vários utilizadores com ecrãs de dimensões superiores a 15 polegadas tiveram problemas com a pixelização do ecrã do relógio, ou seja, não estávamos a escalar corretamente. Para além disso, comentaram que uma função *"auto complete"* melhoraria drasticamente a sua performance.
