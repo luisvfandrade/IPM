@@ -6,3 +6,8 @@ Escrita em Smartwatches
 Divisão das letras em nove teclas, estilo t9 (ordenadas alfabeticamente). Mas, ao invês de se clicar x vezes na tecla para se obter a letra na posição x, seleção das letras é feita através de *swipes*.
 
 **Problema:** Tempo utilizado na procura de posições das letras. Utilizadores já não estão familiarizados com este tipo de teclados.
+
+### Primeira
+Divisão das letras em 3 teclas, estilo qwerty. Evolução da dinâmica dos *swipes*.
+
+**Problema:** Não foi apontado nenhum problema em específico, mas vários utilizadores comentaram que uma função *"auto complete"* melhoraria drasticamente a sua performance.
