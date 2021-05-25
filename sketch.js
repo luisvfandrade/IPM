@@ -10,7 +10,7 @@ const GROUP_NUMBER   = 52;      // add your group number here as an integer (e.g
 const BAKE_OFF_DAY   = false;  // set to 'true' before sharing during the simulation and bake-off days
 
 // Our Database
-const ITERATION      = 'Second'
+const ITERATION      = 'Third'
 const STORE          = true;
 
 let PPI, PPCM;                 // pixel density (DO NOT CHANGE!)
@@ -50,6 +50,7 @@ let click, clickX, clickY;
 let releasedX, releasedY;
 
 let current_word = "";
+let words_typed = [];
 
 // Autocomplete
 let all_words;
@@ -212,7 +213,7 @@ function draw2Dkeyboard()
   imageMode(CORNER);
   image(keyboard, width/2 - 2.0*PPCM, height/2 - 1.0*PPCM, 4.0*PPCM, 3.0*PPCM);
   
-  textFont("Arial", 0.48*PPCM);
+  textFont("Arial", 0.35*PPCM);
   textStyle(BOLD);
   fill(0);
   noStroke();
@@ -228,7 +229,7 @@ function draw2Dkeyboard()
   text("X" , width/2 - 1.32*PPCM, height/2 + 1.08*PPCM);
   text("C" , width/2 - 0.89*PPCM, height/2 + 1.08*PPCM);
   
-  textFont("Arial", 0.48*PPCM);
+  textFont("Arial", 0.35*PPCM);
   textStyle(BOLD);
   fill(0);
   noStroke();
@@ -244,7 +245,7 @@ function draw2Dkeyboard()
   text("B" , width/2 - 0*PPCM, height/2 + 1.08*PPCM);
   text("N" , width/2 + 0.42*PPCM, height/2 + 1.08*PPCM);
   
-  textFont("Arial", 0.48*PPCM);
+  textFont("Arial", 0.35*PPCM);
   textStyle(BOLD);
   fill(0);
   noStroke();
@@ -294,6 +295,7 @@ function mousePressed()
         // Prepares for new trial
         currently_typed = "";
         current_word = "";
+        words_typed = [];
         resetAutoComplete();
         target_phrase = phrases[current_trial];  
       }
@@ -330,15 +332,19 @@ function mouseReleased()
     if (clickX > (width/2 - 1.95*PPCM) && clickX < (width/2 - 1.95*PPCM + 1.9*PPCM) && clickY > (height/2 - 0.85*PPCM) && clickY < (height/2 - 0.85*PPCM + 3.0*PPCM/5))
     {
       currently_typed = currently_typed.substring(0, currently_typed.length - current_word.length);
-      current_word = first_word;
-      currently_typed += first_word;
+      currently_typed += first_word + ' ';
+      words_typed[words_typed.length] = first_word;
+      current_word = '';
+      resetAutoComplete();
     }
     // Autocomplete 2
     else if (clickX > (width/2 + 0.05*PPCM) && clickX < (width/2 + 0.05*PPCM + 1.9*PPCM) && clickY > (height/2 - 0.85*PPCM) && clickY < (height/2 - 0.85*PPCM + 3.0*PPCM/5))
     {
       currently_typed = currently_typed.substring(0, currently_typed.length - current_word.length);
-      current_word = second_word;
-      currently_typed += second_word;
+      currently_typed += second_word + ' ';
+      words_typed[words_typed.length] = second_word;
+      current_word = '';
+      resetAutoComplete();
     }
     // First Button
     else if (clickX > (width/2 - 1.95*PPCM) && clickX < (width/2 - 1.95*PPCM + 1.3*PPCM) && clickY > (height/2 - 0.25*PPCM) && clickY < (height/2 - 0.25*PPCM + 3.00*PPCM/2))
@@ -417,15 +423,24 @@ function mouseReleased()
     else if (clickX > (width/2 - 1.95*PPCM) && clickX < (width/2 - 1.95*PPCM + 2.6 * PPCM) && clickY > (height/2 + 1.27*PPCM) && clickY < (height/2 + 1.27*PPCM + 3.0*PPCM/5))
     {
       currently_typed += ' ';
+      words_typed[words_typed.length] = current_word;
       current_word = '';
       resetAutoComplete();
     }
     // Delete
     else if (clickX > (width/2 + 0.7*PPCM) && clickX < (width/2 + 0.7*PPCM + 1.2*PPCM) && clickY > (height/2 + 1.27*PPCM) && clickY < (height/2 + 1.27*PPCM + 3.0*PPCM/5))
     {
-      currently_typed = currently_typed.substring(0, currently_typed.length - 1);
-      current_word = current_word.substring(0, current_word.length - 1);
-      last_index = 0;
+      if (currently_typed != '') {
+        currently_typed = currently_typed.substring(0, currently_typed.length - 1);
+        if (current_word != '') {
+          current_word = current_word.substring(0, current_word.length - 1);
+        }
+        else if (words_typed.length > 0 && currently_typed[currently_typed.length - 1] != ' ') {
+          current_word = words_typed.pop();
+        }
+        resetAutoComplete();
+        autoComplete();
+      }
     }
   }
 }
@@ -446,6 +461,7 @@ function startSecondAttempt()
   CPS                  = 0;
   
   current_word         = "";
+  words_typed          = [];
   resetAutoComplete();
 
   // Show the watch and keyboard again
