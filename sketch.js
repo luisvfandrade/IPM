@@ -191,19 +191,15 @@ function draw()
     // Draws the non-interactive screen area (4x1cm) -- DO NOT CHANGE SIZE!
     noStroke();
     fill(color(220,220,220));
-    rect(width/2 - 2.0*PPCM, height/2 - 2.0*PPCM, 4.0*PPCM, 1.0*PPCM);
+    rect(width/2 - 1.95*PPCM, height/2 - 2.0*PPCM, 4.0*PPCM, 1.0*PPCM);
 
     textAlign(CENTER); 
     textFont("Arial", 0.35*PPCM);
     fill(0);
     text(current_word, width/2, height/2 - 1.3 * PPCM);
 
-    // Draws the touch input area (4x3cm) -- DO NOT CHANGE SIZE!
-    stroke(0, 255, 0);
-    noFill();
-    rect(width/2 - 2.0*PPCM, height/2 - 1.0*PPCM, 4.0*PPCM, 3.0*PPCM);
-
-    draw2Dkeyboard();       // draws our basic 2D keyboard UI
+    // draws our basic 2D keyboard UI
+    draw2Dkeyboard();
 
     // Draws text on autocomplete buttons
     textAlign(CENTER); 
