@@ -10,7 +10,7 @@ const GROUP_NUMBER   = 52;      // add your group number here as an integer (e.g
 const BAKE_OFF_DAY   = false;  // set to 'true' before sharing during the simulation and bake-off days
 
 // Our Database
-const ITERATION      = 'Third'
+const ITERATION      = 'Fourth';
 const STORE          = true;
 
 let PPI, PPCM;                 // pixel density (DO NOT CHANGE!)
@@ -43,7 +43,10 @@ let errors           = 0;      // a running total of the number of errors (when 
 let database;                  // Firebase DB
 
 // 2D Keyboard UI
-let keyboard, instructions;
+let keyboard, instructions, greenPopup, yellowPopup, pinkPopup;
+
+// Sounds
+let spaceSound, keySound;
 
 // Click variables
 let click, clickX, clickY;
@@ -74,6 +77,13 @@ function preload()
   // Loads UI elements for our basic keyboard
   keyboard = loadImage("data/keyboard.png");
   instructions = loadImage("data/instructions.png");
+  greenPopup = loadImage("data/greenPopup.png");
+  yellowPopup = loadImage("data/yellowPopup.png");
+  pinkPopup = loadImage("data/pinkPopup.png");
+
+  // Loads key sounds for our basic keyboard
+  spaceSound = loadSound('data/space.mp3');
+  keySound = loadSound('data/key.mp3');
 
   // Loads the most used words
   all_words = loadStrings('data/words.txt');
@@ -202,6 +212,229 @@ function draw()
     noStroke();
     text(first_word , width/2 - 0.98*PPCM, height/2 - 0.45*PPCM);
     text(second_word , width/2 + 0.99*PPCM, height/2 - 0.45*PPCM);
+
+    // Draws keys' markers
+    if (mouseIsPressed && click) {
+      // First Button
+      if (clickX > (width/2 - 1.95*PPCM) && clickX < (width/2 - 1.95*PPCM + 1.3*PPCM) && clickY > (height/2 - 0.25*PPCM) && clickY < (height/2 - 0.25*PPCM + 3.00*PPCM/2))
+      {
+        if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) < 0.6*PPCM && clickX > mouseX) {
+          image(greenPopup, width/2 - 2.23*PPCM, height/2 - 0.58*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("A" , width/2 - 1.74*PPCM, height/2 + 0.10*PPCM);
+        }
+        else if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) < 0.6*PPCM && clickX < mouseX) {
+          image(greenPopup, width/2 - 1.4*PPCM, height/2 - 0.58*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("D" , width/2 - 0.89*PPCM, height/2 + 0.10*PPCM);
+        }
+        else if (abs(clickX - mouseX) < 0.6*PPCM && abs(clickY - mouseY) > 0.6*PPCM && clickY > mouseY) {
+          image(greenPopup, width/2 - 1.81*PPCM, height/2 - 1.07*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("W" , width/2 - 1.32*PPCM, height/2 - 0.43*PPCM);
+        }
+        else if (abs(clickX - mouseX) < 0.6*PPCM && abs(clickY - mouseY) > 0.6*PPCM && clickY < mouseY) {
+          image(greenPopup, width/2 - 1.81*PPCM, height/2 - 0.1*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("X" , width/2 - 1.32*PPCM, height/2 + 0.59*PPCM);
+        }
+        else if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) > 0.6*PPCM && clickX > mouseX && clickY > mouseY) {
+          image(greenPopup, width/2 - 2.23*PPCM, height/2 - 1.07*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("Q" , width/2 - 1.74*PPCM, height/2 - 0.43*PPCM); 
+        }
+        else if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) > 0.6*PPCM && clickX < mouseX && clickY > mouseY) {
+          image(greenPopup, width/2 - 1.4*PPCM, height/2 - 1.07*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("E" , width/2 - 0.89*PPCM, height/2 - 0.43*PPCM);
+        }
+        else if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) > 0.6*PPCM && clickX > mouseX && clickY < mouseY) {
+          image(greenPopup, width/2 - 2.23*PPCM, height/2 - 0.1*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("Z" , width/2 - 1.74*PPCM, height/2 + 0.59*PPCM);
+        }
+        else if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) > 0.6*PPCM && clickX < mouseX && clickY < mouseY) {
+          image(greenPopup, width/2 - 1.4*PPCM, height/2 - 0.1*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("C" , width/2 - 0.89*PPCM, height/2 + 0.59*PPCM);
+        }
+      }
+      // Second Button
+      else if (clickX > (width/2 - 0.65*PPCM) && clickX < (width/2 - 0.65*PPCM + 1.3*PPCM) && clickY > (height/2 - 0.25*PPCM) && clickY < (height/2 - 0.25*PPCM + 3.00*PPCM/2))
+      {
+        if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) < 0.6*PPCM && clickX > mouseX) {
+          image(yellowPopup, width/2 - 2.23*PPCM + 1.3*PPCM, height/2 - 0.58*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("F" , width/2 - 0.42*PPCM, height/2 + 0.10*PPCM);
+        }
+        else if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) < 0.6*PPCM && clickX < mouseX){
+          image(yellowPopup, width/2 - 1.4*PPCM + 1.3*PPCM, height/2 - 0.58*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("H" , width/2 + 0.42*PPCM, height/2 + 0.10*PPCM);
+        }
+        else if (abs(clickX - mouseX) < 0.6*PPCM && abs(clickY - mouseY) > 0.6*PPCM && clickY > mouseY) {
+          image(yellowPopup, width/2 - 1.81*PPCM + 1.3*PPCM, height/2 - 1.07*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("T" , width/2 - 0*PPCM, height/2 - 0.43*PPCM); 
+        }
+        else if (abs(clickX - mouseX) < 0.6*PPCM && abs(clickY - mouseY) > 0.6*PPCM && clickY < mouseY) {
+          image(yellowPopup, width/2 - 1.81*PPCM + 1.3*PPCM, height/2 - 0.1*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("B" , width/2 - 0*PPCM, height/2 + 0.59*PPCM);
+        }
+        else if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) > 0.6*PPCM && clickX > mouseX && clickY > mouseY) {
+          image(yellowPopup, width/2 - 2.23*PPCM + 1.3*PPCM, height/2 - 1.07*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("R" , width/2 - 0.42*PPCM, height/2 - 0.43*PPCM); 
+        }
+        else if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) > 0.6*PPCM && clickX < mouseX && clickY > mouseY) {
+          image(yellowPopup, width/2 - 1.4*PPCM + 1.3*PPCM, height/2 - 1.07*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("Y" , width/2 + 0.42*PPCM, height/2 - 0.43*PPCM);
+        }
+        else if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) > 0.6*PPCM && clickX > mouseX && clickY < mouseY) {
+          image(yellowPopup, width/2 - 2.23*PPCM + 1.3*PPCM, height/2 - 0.1*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("V" , width/2 - 0.42*PPCM, height/2 + 0.59*PPCM);
+        }
+        else if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) > 0.6*PPCM && clickX < mouseX && clickY < mouseY) {
+          image(yellowPopup, width/2 - 1.4*PPCM + 1.3*PPCM, height/2 - 0.1*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("N" , width/2 + 0.42*PPCM, height/2 + 0.59*PPCM);
+        }
+      }
+      // Third Button
+      else if (clickX > (width/2 + 0.65*PPCM) && (width/2 + 0.65*PPCM + 1.3*PPCM) && clickY > (height/2 - 0.25*PPCM) && clickY < (height/2 - 0.25*PPCM + 3.00*PPCM/2))
+      {
+        if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) < 0.6*PPCM && clickX > mouseX) {
+          image(pinkPopup, width/2 - 2.23*PPCM + 2.6*PPCM, height/2 - 0.58*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("J" , width/2 + 0.88*PPCM, height/2 + 0.10*PPCM);
+        }
+        else if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) < 0.6*PPCM && clickX < mouseX) {
+          image(pinkPopup, width/2 - 1.4*PPCM + 2.6*PPCM, height/2 - 0.58*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("P" , width/2 + 1.72*PPCM, height/2 + 0.10*PPCM);
+        }
+        else if (abs(clickX - mouseX) < 0.6*PPCM && abs(clickY - mouseY) > 0.6*PPCM && clickY > mouseY) {
+          image(pinkPopup, width/2 - 1.81*PPCM + 2.6*PPCM, height/2 - 1.07*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("I" , width/2 + 1.30*PPCM, height/2 - 0.43*PPCM);
+        }
+        else if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) > 0.6*PPCM && clickX > mouseX && clickY > mouseY) {
+          image(pinkPopup, width/2 - 2.23*PPCM + 2.6*PPCM, height/2 - 1.07*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("U" , width/2 + 0.88*PPCM, height/2 - 0.43*PPCM);
+        }
+        else if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) > 0.6*PPCM && clickX < mouseX && clickY > mouseY) {
+          image(pinkPopup, width/2 - 1.4*PPCM + 2.6*PPCM, height/2 - 1.07*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("O" , width/2 + 1.72*PPCM, height/2 - 0.43*PPCM);
+        }
+        else if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) > 0.6*PPCM && clickX > mouseX && clickY < mouseY) {
+          image(pinkPopup, width/2 - 2.23*PPCM + 2.6*PPCM, height/2 - 0.1*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("M" , width/2 + 0.88*PPCM, height/2 + 0.59*PPCM);
+        }
+        else if (abs(clickX - mouseX) > 0.6*PPCM && abs(clickY - mouseY) > 0.6*PPCM && clickX < mouseX && clickY < mouseY) {
+          image(pinkPopup, width/2 - 1.4*PPCM + 2.6*PPCM, height/2 - 0.1*PPCM, 1.0*PPCM, 1.5*PPCM);
+
+          textFont("Arial", 0.40*PPCM);
+          textStyle(NORMAL);
+          fill(0);
+          noStroke();
+          text("L" , width/2 + 1.72*PPCM, height/2 + 0.59*PPCM);
+        }
+      }
+    }
 
     drawFatFinger();        // draws the finger that simulates the 'fat finger' problem
   }
@@ -336,6 +569,8 @@ function mouseReleased()
       words_typed[words_typed.length] = first_word;
       current_word = '';
       resetAutoComplete();
+      keySound.setVolume(1);
+      keySound.play();
     }
     // Autocomplete 2
     else if (clickX > (width/2 + 0.05*PPCM) && clickX < (width/2 + 0.05*PPCM + 1.9*PPCM) && clickY > (height/2 - 0.85*PPCM) && clickY < (height/2 - 0.85*PPCM + 3.0*PPCM/5))
@@ -345,6 +580,8 @@ function mouseReleased()
       words_typed[words_typed.length] = second_word;
       current_word = '';
       resetAutoComplete();
+      keySound.setVolume(1);
+      keySound.play();
     }
     // First Button
     else if (clickX > (width/2 - 1.95*PPCM) && clickX < (width/2 - 1.95*PPCM + 1.3*PPCM) && clickY > (height/2 - 0.25*PPCM) && clickY < (height/2 - 0.25*PPCM + 3.00*PPCM/2))
@@ -370,6 +607,8 @@ function mouseReleased()
       currently_typed += letter;
       current_word += letter;
       autoComplete();
+      keySound.setVolume(1);
+      keySound.play();
     }
     // Second Button
     else if (clickX > (width/2 - 0.65*PPCM) && clickX < (width/2 - 0.65*PPCM + 1.3*PPCM) && clickY > (height/2 - 0.25*PPCM) && clickY < (height/2 - 0.25*PPCM + 3.00*PPCM/2))
@@ -395,6 +634,8 @@ function mouseReleased()
       currently_typed += letter;
       current_word += letter;
       autoComplete();
+      keySound.setVolume(1);
+      keySound.play();
     }
     // Third Button
     else if (clickX > (width/2 + 0.65*PPCM) && (width/2 + 0.65*PPCM + 1.3*PPCM) && clickY > (height/2 - 0.25*PPCM) && clickY < (height/2 - 0.25*PPCM + 3.00*PPCM/2))
@@ -418,6 +659,8 @@ function mouseReleased()
       currently_typed += letter;
       current_word += letter;
       autoComplete();
+      keySound.setVolume(1);
+      keySound.play();
     }
     // Space
     else if (clickX > (width/2 - 1.95*PPCM) && clickX < (width/2 - 1.95*PPCM + 2.6 * PPCM) && clickY > (height/2 + 1.27*PPCM) && clickY < (height/2 + 1.27*PPCM + 3.0*PPCM/5))
@@ -426,6 +669,8 @@ function mouseReleased()
       words_typed[words_typed.length] = current_word;
       current_word = '';
       resetAutoComplete();
+      spaceSound.setVolume(1);
+      spaceSound.play();
     }
     // Delete
     else if (clickX > (width/2 + 0.7*PPCM) && clickX < (width/2 + 0.7*PPCM + 1.2*PPCM) && clickY > (height/2 + 1.27*PPCM) && clickY < (height/2 + 1.27*PPCM + 3.0*PPCM/5))
@@ -440,6 +685,8 @@ function mouseReleased()
         }
         resetAutoComplete();
         autoComplete();
+        spaceSound.setVolume(1);
+        spaceSound.play();
       }
     }
   }
