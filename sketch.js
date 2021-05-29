@@ -128,7 +128,7 @@ function drawInstructions()
   text("=", width * 0.075, height * 0.57);
   fill(color(255,255,255));
   textStyle(ITALIC);
-  text("Input: g", width * 0.1, height * 0.57);
+  text("Input: s", width * 0.1, height * 0.57);
   pop();
   
   push();
@@ -169,8 +169,8 @@ function drawInstructions()
   fill(255);
   textFont("Arial", 17);
   textStyle(ITALIC);
-  text("Input: h" , width * 0.35, height * 0.71);
-  text("Input: n", width * 0.35, height * 0.89);
+  text("Input: d" , width * 0.35, height * 0.71);
+  text("Input: c", width * 0.35, height * 0.89);
   textFont("Arial", 12);
   text("Click+Swipe Right" , width * 0.19, height * 0.67)
   text("Click+Swipe Diagonally" , width * 0.06, height * 0.86)
