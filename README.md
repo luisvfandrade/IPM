@@ -20,4 +20,9 @@ Para além das mudanças da primeira iteração, foi implementado um algoritmo d
 ### Terceira
 O tamanho das teclas centrais, de cada uma das três regiões, foi reduzido (para ser mais fácil reconhecer o teclado), e foi adicionado um espaço automático após a utilização de uma das teclas de *"auto complete"*.
 
-**Problema:** ?
+**Problema:** Dado que os tempos ainda não eram ideais, e que não tivemos muitos comentários de utilizadores, olhámos com atencão e verificámos que no nosso protótipo não é dado qualquer tipo de feedback de que se está a selecionar uma letra, antes da mesma ser inserida na frase, o que pode levar a alguns enganos. Adicionalmente, a partir dos únicos comentários que recebemos, notámos também que não temos feedback sonoro.
+
+### Quarta
+No ato do *swipe*, e antes do dedo ser levantado, foi adicionado um genéro de "marcador" que enfatiza a tecla que está a ser selecionada. Para além disso, foram acrescentados sons quando qualquer tecla é premida com sucesso.
+
+**Problema:** Iteração final?
